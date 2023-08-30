@@ -70,6 +70,48 @@ app.post("/login", async (req, res, next) => {
   }
 });
 
+app.get('/getanime', async (req, res, next) => {
+  try {
+
+    console.log(req.query)
+    let page = req.query.page
+    if(!page) {page = 1}
+  const data = await axios({
+     method: 'GET',
+    url: `https://api.jikan.moe/v4/top/anime`,
+    params: {
+      sfw: 'true',
+      page: page
+      }
+  })
+  // console.log(data.data)
+    res.status(200).json({
+data:data.data
+})
+  } catch (error) {
+    console.log(error)
+    next(error)
+  }
+
+})
+
+app.get('/getanimeById/:mal_id', async (req, res, next) => {
+  try {
+    const mal_id = req.params.mal_id
+  const data = await axios({
+     method: 'GET',
+    url: `https://api.jikan.moe/v4/anime/${mal_id}`,
+  })
+  // console.log(data.data)
+    res.status(200).json({
+data:data.data
+})
+  } catch (error) {
+    console.log(error)
+    next(error)
+  }
+
+})
 app.use(authenticatePub)
 app.patch("/member", async (req, res, next) => {
   try {
@@ -132,30 +174,6 @@ app.post("/tokenformember", async (req, res, next) => {
   }
 });
 
-app.get('/getanime', async (req, res, next) => {
-  try {
-
-    console.log(req.query)
-    let page = req.query.page
-    if(!page) {page = 1}
-  const data = await axios({
-     method: 'GET',
-    url: `https://api.jikan.moe/v4/top/anime`,
-    params: {
-      sfw: 'true',
-      page: page
-      }
-  })
-  // console.log(data.data)
-    res.status(200).json({
-data:data.data
-})
-  } catch (error) {
-    console.log(error)
-    next(error)
-  }
-
-})
 app.use(errorHandler);
 
 app.listen(port, () => {
