@@ -63,7 +63,6 @@ app.post("/login", async (req, res, next) => {
     console.log(access_token);
     res.status(200).json({
       access_token: access_token,
-      user: user,
     });
   } catch (err) {
     console.log(err);
@@ -219,7 +218,6 @@ app.post('/bookmark/:animeId', async (req, res, next) => {
     // console.log(bookmark)
     res.status(201).json({
       message: `Anime with MAL ID ${animeId} sucessfully bookmarked`,
-      bookmark
     })
   } catch (error) {
     console.log(error)
