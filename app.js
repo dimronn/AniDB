@@ -5,7 +5,7 @@ const bcrpyt = require('bcryptjs')
 const express = require("express");
 const cors = require("cors");
 const errorHandler = require("./middlewares/errorHandlers");
-const {User} = require("./models/index");
+const {User, Bookmark} = require("./models/index");
 const authenticatePub = require("./middlewares/authenticationPub");
 if (process.env.NODE_ENV !== "production") {
   require("dotenv").config();
@@ -16,6 +16,7 @@ const port = process.env.PORT || 3000;
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cors());
+
 
 app.post("/register", async (req, res, next) => {
   try {
@@ -75,13 +76,22 @@ app.get('/getanime', async (req, res, next) => {
 
     console.log(req.query)
     let page = req.query.page
-    if(!page) {page = 1}
+    let genre = req.query.genre
+    let title = req.query.title
+    if (!page) { page = 1 }
+    if(!genre) {genre = ''}
+    if(!title) {title = ''}
+    
   const data = await axios({
      method: 'GET',
-    url: `https://api.jikan.moe/v4/top/anime`,
+    url: `https://api.jikan.moe/v4/anime`,
     params: {
       sfw: 'true',
-      page: page
+      type: 'tv',
+      genres: genre,
+      page: page,
+      q: title,
+      order_by: "popularity"
       }
   })
   // console.log(data.data)
@@ -138,8 +148,10 @@ app.patch("/member", async (req, res, next) => {
 app.post("/tokenformember", async (req, res, next) => {
   try {
     const id = req.user.id
-    const user = User.findByPk(id)
+    const user = await User.findByPk(id)
+    console.log(user)
     if (user.member === "member") { 
+      
       throw {name: "already a member"}
     }
     // Create Snap API instance
@@ -173,6 +185,48 @@ app.post("/tokenformember", async (req, res, next) => {
     next(error)
   }
 });
+
+app.post('/bookmark/:animeId', async (req, res, next) => {
+  try {
+    const id = req.user.id
+    const animeId = req.params.animeId
+    const bookmark = await Bookmark.create({ userId: id, animeId: animeId })
+    console.log(bookmark)
+    res.status(201).json({
+      message: `Anime with MAL ID ${animeId} sucessfully bookmarked`
+    })
+  } catch (error) {
+    console.log(error)
+    next(error)
+  }
+ })
+
+app.get('/bookmarks', async (req, res, next) => {
+  try {
+    const id = req.user.id
+    const bookmarks = await Bookmark.findAll({
+      where: {
+      userId : id
+      }
+    })
+    // let anime = bookmarks.map((e) => { 
+    //   return `https://api.jikan.moe/v4/anime/${e.animeId}`
+    // })
+    // const requests = anime.map((url) => axios.get(url));
+    // axios.all(requests).then(response => { 
+    //   console.log(response[0])
+    //   console.log(response[1])
+    //   console.log(response[2])
+    // })
+    res.status(200).json({
+      bookmarks
+      
+    })
+  } catch (error) {
+    console.log(error)
+    next(error)
+  }
+})
 
 app.use(errorHandler);
 
