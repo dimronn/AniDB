@@ -1,4 +1,7 @@
 'use strict';
+
+const { STRING } = require('sequelize');
+
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
@@ -21,6 +24,30 @@ module.exports = {
       },
       animeId: {
         type: Sequelize.INTEGER
+      },
+      title: {
+        type: Sequelize.STRING
+      },
+      synopsis: {
+        type: Sequelize.TEXT
+      },
+      image: {
+        type: Sequelize.STRING
+      },
+      rating: {
+        type: Sequelize.STRING
+      },
+      score: {
+        type: Sequelize.STRING
+      },
+      status: {
+        type: Sequelize.STRING
+      },
+      genre: {
+        type: Sequelize.ARRAY(STRING)
+      },
+      trailer: {
+        type: Sequelize.STRING
       },
       createdAt: {
         allowNull: false,

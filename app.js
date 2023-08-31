@@ -190,10 +190,36 @@ app.post('/bookmark/:animeId', async (req, res, next) => {
   try {
     const id = req.user.id
     const animeId = req.params.animeId
-    const bookmark = await Bookmark.create({ userId: id, animeId: animeId })
-    console.log(bookmark)
+    const dataMal = await axios({
+      method: 'get',
+      url: `https://api.jikan.moe/v4/anime/${animeId}`
+    })
+    // console.log(dataMal.data)
+    const image = dataMal.data.data.images.jpg.image_url
+    const trailer = dataMal.data.data.trailer.embed_url
+    const title = dataMal.data.data.title_english
+    const status = dataMal.data.data.status
+    const score = dataMal.data.data.score
+    const synopsis = dataMal.data.data.synopsis
+    const rating = dataMal.data.data.rating
+    const genre = dataMal.data.data.genres
+    // console.log( image, trailer,title, status, score, synopsis, genre)
+    const bookmark = await Bookmark.create({
+      userId: id,
+      animeId: animeId,
+      image: image,
+      trailer: trailer,
+      title: title,
+      status: status,
+      score: score,
+      synopsis: synopsis,
+      rating:rating,
+      genre:genre
+    })
+    // console.log(bookmark)
     res.status(201).json({
-      message: `Anime with MAL ID ${animeId} sucessfully bookmarked`
+      message: `Anime with MAL ID ${animeId} sucessfully bookmarked`,
+      bookmark
     })
   } catch (error) {
     console.log(error)
@@ -209,15 +235,7 @@ app.get('/bookmarks', async (req, res, next) => {
       userId : id
       }
     })
-    // let anime = bookmarks.map((e) => { 
-    //   return `https://api.jikan.moe/v4/anime/${e.animeId}`
-    // })
-    // const requests = anime.map((url) => axios.get(url));
-    // axios.all(requests).then(response => { 
-    //   console.log(response[0])
-    //   console.log(response[1])
-    //   console.log(response[2])
-    // })
+
     res.status(200).json({
       bookmarks
       

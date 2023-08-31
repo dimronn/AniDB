@@ -15,7 +15,18 @@ module.exports = (sequelize, DataTypes) => {
   }
   Bookmark.init({
     userId: DataTypes.INTEGER,
-    animeId: DataTypes.INTEGER
+    animeId: DataTypes.INTEGER,
+    title: DataTypes.STRING,
+    synopsis: DataTypes.TEXT,
+    image: DataTypes.STRING,
+    rating: DataTypes.STRING,
+    score: DataTypes.STRING,
+    status: DataTypes.STRING,
+    genre: DataTypes.ARRAY(DataTypes.STRING),
+    trailer: DataTypes.STRING
+
+
+
   }, {
     sequelize,
     modelName: 'Bookmark',
